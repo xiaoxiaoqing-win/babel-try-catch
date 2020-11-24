@@ -31,5 +31,13 @@
     "lib": "lib",
     "test": "test"
   },
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Alberqing/babel-try-catch.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Alberqing/babel-try-catch/issues"
+  },
+  "homepage": "https://github.com/Alberqing/babel-try-catch#readme"
 }
