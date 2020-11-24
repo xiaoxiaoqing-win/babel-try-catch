@@ -40,7 +40,7 @@ const generateTryCatch = (path) => {
 
 
     // =================================== 编辑新节点 ============================
-    var catchStatement = template.statement(`console.log(error)`)(); // 将 console.log(error) 转为 ast，如下：
+    var catchStatement = template.statement(`throw error`)(); // 将 console.log(error) 转为 ast，如下：
     /**
      * catchStatement {
         type: 'ExpressionStatement',
@@ -82,7 +82,7 @@ const generateTryCatch = (path) => {
     } else if (t.isFunctionDeclaration(node)) {
       func = t.functionDeclaration(node.id, params, t.BlockStatement([tryStatement]), isGenerator, isAsync);
     } else if (t.isArrowFunctionExpression(node)) {
-        func = t.arrowFunctionExpression(params, body, async)
+        func = t.arrowFunctionExpression(params, t.BlockStatement([tryStatement]), isAsync)
     } else {
       func = t.functionExpression(node.id, params, t.BlockStatement([tryStatement]), isGenerator, isAsync);
     }
