@@ -6,11 +6,6 @@ var template = require("@babel/template");
 var DISABLE_COMMENT = 'disable-try-catch';
 var LIMIT_LINE = 0;
 
-// 这里可以做点什么，比如用 sdk 将错误捕获上报等
-// const reporter = () => {
-//   console.log(error);
-// }
-
 const generateTryCatch = (path) => {
   try {
     var node = path.node,
@@ -95,6 +90,24 @@ const generateTryCatch = (path) => {
   }
 }
 
+var bool = false;
+
+var expressTryCatch = function expressTryCatch(path) {
+    var node = path.node,
+    params = node.params;
+
+    var catchStatement = template.statement("throw error")(); // 将 console.log(error) 转为 ast，如下：
+
+    var catchClause = t.catchClause(t.identifier('error'), t.blockStatement([catchStatement]));
+    var blockStatement = t.blockStatement([node]);
+    var tryStatement = t.tryStatement(blockStatement, catchClause);
+
+    if (t.isExpressionStatement(node) && !bool) {
+        path.replaceWith(tryStatement);
+        bool = true;
+    } 
+}
+
 module.exports = function(source) {
   // 1、源码解析
   let ast = parser.parse(source, {
@@ -110,18 +123,10 @@ module.exports = function(source) {
     ArrowFunctionExpression(path, state){ // 箭头函数 节点
       generateTryCatch(path);
     },
+    ExpressionStatement: function ExpressionStatement(path) {
+      expressTryCatch(path);
+    }
     // JS的其它表达（如class、for、switch等）共170种左右...
   });
-
-  //  3、转为处理后的源码，形如：
-  /**
-   * var fn = function () {
-        try {
-          console.log(t);
-        } catch (error) {
-          console.log(error);
-        }
-      };
-   */
   return core.transformFromAstSync(ast, null).code;
 }
