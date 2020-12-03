@@ -105,11 +105,9 @@ module.exports = function(source) {
   // 2、遍历
   traverse(ast, {
     FunctionExpression(path, state) { // Function 节点
-      console.log('Function 函数!')
       generateTryCatch(path);
     },
     ArrowFunctionExpression(path, state){ // 箭头函数 节点
-      console.log('箭头函数!')
       generateTryCatch(path);
     },
     // JS的其它表达（如class、for、switch等）共170种左右...
